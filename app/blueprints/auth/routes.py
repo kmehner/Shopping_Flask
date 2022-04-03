@@ -8,8 +8,10 @@ from .models import User
 def signup():
     title = 'Sign Up'
     form = SignUpForm()
+
     # check if a post request and that the form is valid
     if form.validate_on_submit():
+        
         # Get data from the validated form
         email = form.email.data
         username = form.username.data
