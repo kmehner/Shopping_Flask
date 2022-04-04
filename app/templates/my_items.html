@@ -2,20 +2,37 @@
 
 
 {% block content %}
+    <div class="row">
+        <h1>My Items</h1>
+        {% if not user_cart %}
+            <p>Your cart seems to be empty, consider adding to it <a href="{{ url_for('shop.store') }}">here!</a></p>
+        {% else %}
 
-    <h1>My Items</h1>
-
-    {% for i in items %}
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">{{ i.title }}</h5>
-                <p class="card-text">{{ i.price }}</p>
-                <div>
-                    <cite>&mdash; {{ i.User }}</cite>
+            {% for i in items %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ i.title }}</h5>
+                        <p class="card-text">{{ i.price }}</p>
+                        <div>
+                            <cite>&mdash; {{ i.User }}</cite>
+                        </div>
+                        <div class="row justify-content-end mx-3">
+                        <a href="{{ url_for('cart.remove_from_cart', cart_id=cart.id) }}" class="btn btn-danger" style="width: 50px;"><i class="fas fa-trash-alt"></i></a>
+                    </div>
                 </div>
-            </div>
-        </div>
-  
-    {% endfor %}
+        
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="row">
+
+        <p>Total ${{ total }}</p>
+        <p>Payment</p>
+        <p>Shipping</p>
+
+        <a href="{{ url_for('cart.checkout') }}" class="btn btn-success">Checkout</a>
+
+    </div>
 
 {% endblock content %}

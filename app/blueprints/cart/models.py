@@ -4,9 +4,9 @@ from datetime import datetime
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(20), unique=True, nullable=False)
-    price = db.Column(db.String(5))
+    price = db.Column(db.String(6))
+    description = db.Column(db.String(200))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    cart = db.relationship('Customer Cart', backref='Item', lazy='dynamic')
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __init__(self, **kwargs):
@@ -19,7 +19,7 @@ class Item(db.Model):
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
-            if key in {'title', 'price'}:
+            if key in {'title', 'price', 'description'}:
                 setattr(self, key, value)
         db.session.commit()
 
@@ -29,6 +29,20 @@ class Item(db.Model):
 
 class CustomerCart:
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
-    item_id = db.Column(db.Integer, db.ForeignKey('Item.id'))
-    
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    item_id = db.Column(db.Integer, db.ForeignKey('item.id'))
+    quantity = db.Column(db.Integer, primary_key=True)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        db.session.add(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return f"<Item|{self.item_id}>"
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+
