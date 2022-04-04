@@ -1,7 +1,7 @@
 from . import cart
 from flask import redirect, render_template, url_for, flash
 from flask_login import login_required, current_user
-from .forms import ItemForm, SearchForm, CustomerCartForm
+from .forms import ItemForm, SearchForm
 from .models import Item, CustomerCart
 
 @cart.route('/')

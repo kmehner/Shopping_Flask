@@ -13,6 +13,3 @@ class SearchForm(FlaskForm):
     search = StringField('Search', validators=[DataRequired()])
     submit = SubmitField('Search')
 
-class CustomerCartForm:
-    add_item = StringField('Add Item', validators=[DataRequired()])
-    submit = SubmitField('Add Item')
