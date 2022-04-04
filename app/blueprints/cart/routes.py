@@ -22,12 +22,6 @@ def add_product():
         new_item = Item(title=title, price=price, user_id=current_user.id)
         flash(f"{new_item.title} has been created", 'secondary')
 
-        user_id = current_user.id 
-        item_id = new_item.id
-
-        new_cart_item = CustomerCart(user_id = user_id, item_id=item_id)
-
-
         return redirect(url_for('cart.index'))
     return render_template('add_products.html', title=title, form=form)
 

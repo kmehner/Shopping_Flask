@@ -27,7 +27,7 @@ class Item(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-class CustomerCart:
+class CustomerCart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'))
