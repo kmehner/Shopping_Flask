@@ -1,8 +1,8 @@
 from . import cart
 from flask import redirect, render_template, url_for, flash
 from flask_login import login_required, current_user
-from .forms import ItemForm, SearchForm
-from .models import Item
+from .forms import ItemForm, SearchForm, CustomerCartForm
+from .models import Item, CustomerCart
 
 @cart.route('/')
 def index():
@@ -35,18 +35,24 @@ def my_items():
 # Get A Single Item by ID
 @cart.route('/items/<item_id>')
 @login_required
-def single_iteem(item_id):
+def single_item(item_id):
     item = Item.query.get_or_404(item_id)
     title = item.title
-    return render_template('post_detail.html', title=title, item=item)
+    return render_template('single_item.html', title=title, item=item)
 
 # Get all items that match search
-@cart.route('/search-iteems', methods=['GET', 'POST'])
+@cart.route('/search-items', methods=['GET', 'POST'])
 def search_items():
     title = 'Search'
     form = SearchForm()
     items = []
     if form.validate_on_submit():
         term = form.search.data
-        items = Item.query.filter( ( Item.title.ilike(f'%{term}%')) | ( Item.body.ilike(f'%{term}%')) ).all()
+        items = Item.query.filter( ( Item.title.ilike(f'%{term}%')) | ( Item.price.ilike(f'%{term}%')) ).all()
     return render_template('search_items.html', title=title, items=items, form=form)
+
+@cart.route('/cart-items')
+def cart_items():
+    title = 'Home'
+    items = CustomerCart.query.all()
+    return render_template('cart_items.html', title=title, items=items)

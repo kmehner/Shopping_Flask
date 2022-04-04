@@ -1,4 +1,3 @@
-from cgi import print_exception
 from app import db
 from datetime import datetime
 
@@ -7,6 +6,7 @@ class Item(db.Model):
     title = db.Column(db.String(20), unique=True, nullable=False)
     price = db.Column(db.String(5))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    cart = db.relationship('Customer Cart', backref='Item', lazy='dynamic')
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __init__(self, **kwargs):
@@ -26,3 +26,9 @@ class Item(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+class CustomerCart:
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
+    item_id = db.Column(db.Integer, db.ForeignKey('Item.id'))
+    
