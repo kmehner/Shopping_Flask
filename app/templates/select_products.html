@@ -1,14 +1,17 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
+
 {% block content %}
+<h1>{{ title }}</h1>
 <div class="row">
-    {% for item in items %}
-    
+
+    {% for p in products %}
     <div class="col-sm">
         <div class="card">
             <div class="card-body">
                 <div>
                     <b>
-                    {{ item.title }}
+                    {{ p.name }}
+                    {{ p.price }}
                     </b>
                 </div>					    
                 <p class="card-text">{{ item.description }}</p>

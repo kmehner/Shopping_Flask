@@ -1,74 +1,106 @@
 from . import cart
 from flask import redirect, render_template, url_for, flash
 from flask_login import login_required, current_user
-from .forms import ItemForm, SearchForm
-from .models import Item, CustomerCart
+from .forms import ProductForm, SearchForm
+from .models import Product, Cart
 
 @cart.route('/')
 def index():
     title = 'Home'
-    items = Item.query.all()
-    return render_template('index.html', title=title, items=items)
+    products = Product.query.all()
+    return render_template('index.html', title=title, products=products)
 
+# Creating the product routes (eventually set to admin function)
 
-@cart.route('/add-product', methods=['GET', 'POST'])
+@cart.route('/create-product', methods=['GET', 'POST'])
 @login_required
-def add_product():
+def create_product():
     title = 'Add a Product'
-    form = ItemForm()
+    form = ProductForm()
     if form.validate_on_submit():
-        title = form.title.data
+        name = form.name.data
         price = form.price.data
-        new_item = Item(title=title, price=price, user_id=current_user.id)
-        flash(f"{new_item.title} has been created", 'secondary')
+        description = form.description.data
+        new_product = Product(name=name, price=price, description=description, user_id=current_user.id)
+        flash(f"{new_product.name} has been created", 'secondary')
 
         return redirect(url_for('cart.index'))
-    return render_template('add_products.html', title=title, form=form)
+    return render_template('create_product.html', title=title, form=form)
 
-# Get A Single Item by ID
-@cart.route('/items/<item_id>')
+# Get A Single product by ID
+@cart.route('/products/<product_id>')
 @login_required
-def single_item(item_id):
-    item = Item.query.get_or_404(item_id)
-    title = item.title
-    return render_template('single_item.html', title=title, item=item)
+def single_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    title = "More information"
+    return render_template('single_product.html', title=title, product=product)
 
-# Get all items that match search
-@cart.route('/search-items', methods=['GET', 'POST'])
-def search_items():
+# Get all products that match search
+@cart.route('/search-products', methods=['GET', 'POST'])
+def search_products():
     title = 'Search'
     form = SearchForm()
-    items = []
+    products = []
     if form.validate_on_submit():
         term = form.search.data
-        items = Item.query.filter( ( Item.title.ilike(f'%{term}%')) | ( Item.price.ilike(f'%{term}%')) ).all()
-    return render_template('search_items.html', title=title, items=items, form=form)
+        products = Product.query.filter( ( Product.name.ilike(f'%{term}%')) | ( Product.price.ilike(f'%{term}%')) ).all()
+    return render_template('search_products.html', title=title, products=products, form=form)
 
-@cart.route('/my-cart-items')
-@login_required
-def my_items():
-    title = 'My Cart Items'
-    items = [Item.query.filter(Item.id == cart.item_id).all[0] for cart in current_user.my_cart.all()]
-    total = sum([item.price for item in items])
-    if items:
-        cart = current_user.my_cart.all()
-        user_cart = zip(items, cart)
-    return render_template('my_items.html', title=title, cart=cart)
+# insert my_products (edit, delete)
 
 
-@cart.route('/select-items')
-def select_items():
-    title = 'Cart Items'
-    items = CustomerCart.query.all()
-    return render_template('select_items.html', title=title, items=items)
+# Cart routes 
 
-@cart.route('/add-to-cart/<item_id>')
+# @cart.route('/select-products')
+# def select_products():
+#     title = 'Cart Products'
+#     products = Cart.query.all()
+#     return render_template('select_products.html', title=title, products=products)
+
+# update the quantity eventually sick 
+@cart.route('/add-to-cart/<product_id>')
 @login_required 
-def add_to_cart(item_id):
-    item = Item.query.get_or_404(item_id)
-    add_to_cart = CustomerCart(user_id = current_user.id, item_id = item.id)
-    flash(f"{item.title} has been added to your cart.", "success")
-    return redirect(url_for('cart.index'))
+def add_to_cart(product_id):
+    product_to_add = Product.query.get_or_404(product_id)
+    if product_to_add:
+        user_cart = current_user.my_cart.all()
+        product_id = product_to_add.id
+        current_user_id = current_user.id
+        if product_to_add in user_cart: # update quantity not add
+            quantity = product_to_add.quantity + 1
+        else:
+            quantity = 1
+        add_to_cart = Cart(user_id = current_user_id, product_id = product_id, quantity=quantity)
+        flash(f"Product has been added to your cart.", "success")
+        return redirect(url_for('cart.index'))
+    else:
+        flash("Sorry, there was an error adding this item to your cart.", "danger")
+        return redirect(url_for('cart.index'))
+
+@cart.route('/my-cart-products')
+@login_required
+def my_cart_products():
+    title = 'My Cart'
+    products = [Product.query.filter(Product.id == cart.product_id).all()[0] for cart in current_user.my_cart.all()]
+    total = sum([float(product.price) for product in products])
+    if products:
+        cart = current_user.my_cart.all()
+        user_cart = zip(products, cart)
+        return render_template('my_cart_products.html', title=title, user_cart=user_cart, total=total)
+    else:
+        flash("Your cart appears to be empty", "danger")
+    return render_template('my_cart_products.html')
+
+
+@cart.route("/remove-from-cart/<int:cart_id>")
+@login_required
+def remove_from_cart(cart_id):
+    title = 'Remove product from cart'
+    cart = Cart.query.get_or_404(cart_id)
+    cart.delete()
+    flash('Product has been removed from your cart!', 'success')
+    return redirect(url_for('cart.my_cart_products'))
+
 
 @cart.route('/checkout')
 @login_required 
@@ -78,13 +110,3 @@ def checkout():
         cart.delete()
     flash(f"You have successfully checked out! Your cart is now empty.", "success")
     return redirect(url_for('cart.index'))
-
-@cart.route("/remove-from-cart/<int:item_id>")
-@login_required
-def remove_from_cart(item_id):
-    title = 'Remove item from cart'
-    cart = CustomerCart.query.get_or_404(item_id)
-    cart.delete()
-    flash('Item has been removed from your cart!', 'success')
-    return redirect(url_for('cart.cart_items'))
-

@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h1>Search Cart</h1>
+<h1>Search Products</h1>
 
 <form action="" method="post">
     {{ form.csrf_token }}
@@ -15,15 +15,15 @@
 </form>
 
 <div class="row">
-    {% for i in items %}
+    {% for p in products %}
     <div class="col-12 col-md-6 col-lg-4">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title text-center">{{ i.title }}</h5>
+                <h5 class="card-title text-center">{{ p.name }}</h5>
                 <div class="d-flex justify-content-center">
-                    <cite>&mdash; {{ i.User }}</cite>
+                    <cite>&mdash; {{ p.price }}</cite>
                 </div>
-                <a href="{{ url_for('cart.single_item', item_id=i.id) }}" class="btn btn-primary w-100">More Info</a>
+                <a href="{{ url_for('cart.single_product', product_id=p.id) }}" class="btn btn-primary w-100">More Info</a>
             </div>
         </div>
     </div>

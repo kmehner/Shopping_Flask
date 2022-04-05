@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="card mt-5">
+    <div class="card-title bg-dark text-light">
+        <div class="title-block text-center">
+            {{ title }}
+        </div>
+    </div>
+    <div class="card-body">
+        <h1 class="text-center">{{ product.name }}</h1>
+        <h5 class="text-center"> {{ product.price }}</h5>
+        <h5 class="text-center">{{ product.description }}</h5>
+    </div>
+</div>
+
+{% endblock content %}

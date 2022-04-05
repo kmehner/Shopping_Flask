@@ -12,8 +12,9 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
-    my_cart = db.relationship('CustomerCart', backref='buyer', lazy='dynamic')
-    my_listings = db.relationship('Item', backref='author', lazy='dynamic')
+    admin = db.Column(db.String(256), nullable=False, default=False)
+    my_cart = db.relationship('Cart', backref='buyer', lazy='dynamic')
+    my_listings = db.relationship('Product', backref='seller', lazy='dynamic')
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __init__(self, **kwargs):

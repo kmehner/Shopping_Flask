@@ -11,13 +11,13 @@
 
     <div class="row">
 
-        {% for i in items %}
+        {% for p in products %}
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title text-center">{{ i.title }}</h5>
+                    <h5 class="card-title text-center">{{ p.title }}</h5>
                     <div class="d-flex justify-content-center">
-                        <cite>&mdash; {{ i.price }}</cite>
+                        <cite>&mdash; {{ p.price }}</cite>
                     </div>
                 </div>
             </div>
