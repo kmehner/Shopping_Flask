@@ -3,7 +3,6 @@ from flask_login import UserMixin
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
 @login.user_loader
 def get_user(user_id):
     return User.query.get(user_id)
@@ -13,8 +12,10 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
+    admin = db.Column(db.String(256), nullable=False, default=False)
+    my_cart = db.relationship('Cart', backref='buyer', lazy='dynamic')
+    my_listings = db.relationship('Product', backref='seller', lazy='dynamic')
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    cart_item = db.relationship('Item', backref='User', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -30,3 +31,5 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+

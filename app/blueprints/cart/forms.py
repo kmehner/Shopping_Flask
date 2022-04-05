@@ -3,12 +3,14 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
 
-class ItemForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired()])
+class ProductForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
     price = StringField('Price', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
     submit = SubmitField('Create Item')
 
 
 class SearchForm(FlaskForm):
     search = StringField('Search', validators=[DataRequired()])
     submit = SubmitField('Search')
+

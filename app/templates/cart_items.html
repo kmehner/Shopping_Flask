@@ -15,12 +15,10 @@
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title text-center">{{ p.name }}</h5>
+                    <h5 class="card-title text-center">{{ p.title }}</h5>
                     <div class="d-flex justify-content-center">
                         <cite>&mdash; {{ p.price }}</cite>
                     </div>
-                    <a href="{{ url_for('cart.add_to_cart', product_id=p.id) }}" class="btn btn-primary mt-2 mb-2 w-100">Add to Cart</a>
-                    <a href="{{ url_for('cart.single_product', product_id=p.id) }}" class="btn btn-primary mt-2 mb-2 w-100">More Info</a>
                 </div>
             </div>
         </div>

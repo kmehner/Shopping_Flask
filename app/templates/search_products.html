@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<h1>Search Products</h1>
+
+<form action="" method="post">
+    {{ form.csrf_token }}
+    <div class="form-group">
+        {{ form.search(class='form-control', placeholder='Search Items Here') }}
+
+        {{ form.submit(class='btn btn-primary w-100')}}
+    </div>
+</form>
+
+<div class="row">
+    {% for p in products %}
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-center">{{ p.name }}</h5>
+                <div class="d-flex justify-content-center">
+                    <cite>&mdash; {{ p.price }}</cite>
+                </div>
+                <a href="{{ url_for('cart.single_product', product_id=p.id) }}" class="btn btn-primary w-100">More Info</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}

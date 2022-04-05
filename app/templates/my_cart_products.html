@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="row">
+        <h1>{{ title }}</h1>
+        {% if not user_cart %}
+            <p>Your cart seems to be empty, consider adding to it <a href="{{ url_for('cart.index') }}">here!</a></p>
+        {% else %}
+
+            {% for p, cart in user_cart %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ p.name }}</h5>
+                        <p class="card-text">{{ p.price }}</p>
+                        <a href="{{ url_for('cart.remove_from_cart', cart_id=cart.id) }}" class="btn btn-danger" style="width: 50px;"><i class="fas fa-trash-alt"></i></a>
+                    </div>
+                </div>
+        
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Checkout -->
+    <div class="row">
+
+        <p>Total ${{ total }}</p>
+        <p>Payment</p>
+        <p>Shipping</p>
+
+        <a href="{{ url_for('cart.checkout') }}" class="btn btn-success">Checkout</a>
+
+    </div>
+
+{% endblock content %}

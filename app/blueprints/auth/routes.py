@@ -24,6 +24,7 @@ def signup():
 
         # Create a new user instance with form data
         new_user = User(email=email, username=username, password=password)
+        login_user(new_user)
         # flash message saying new user has been created
         flash(f"{new_user.username} has succesfully signed up.", "success")
         return redirect(url_for('cart.index'))

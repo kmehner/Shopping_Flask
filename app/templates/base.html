@@ -11,11 +11,21 @@
         <title>Shopping Cart</title>
     </head>
 <body>
+    <div class="row bg-dark">
+        <h1 class="text-center text-white">Rowdy Mermaid</h1>
+    </div>
 
-    <nav>
+    <nav class="nav bg-dark d-flex justify-content-around">
         <a href="{{ url_for('cart.index') }}" class="link-light">Home</a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('cart.create_product') }}" class="link-light">Create Product</a>
+        <a href="{{ url_for('cart.search_products') }}" class="link-light">Search Products</a>
+        <a href="{{ url_for('cart.my_cart_products') }}" class="link-light">My Cart</a>
+        <a href="{{ url_for('auth.logout') }}" class="link-light">Log Out</a>
+        {% else %}
         <a href="{{ url_for('auth.signup') }}" class="link-light">Sign Up</a>
         <a href="{{ url_for('auth.login') }}" class="link-light">Log In</a>
+        {% endif %}
     </nav>
 
     <div class="container">
