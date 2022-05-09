@@ -38,6 +38,9 @@
                                     <a href="{{ url_for('cart.remove_from_cart', product_id=p.id) }}" class="btn btn-danger fas fa-trash-alt"></a>
                                 </div>
                             </div>
+                            {% if p.unavailable %}
+                            <p class="card-text text-danger mt-2">* Item is currently unavailable</p>
+                            {% endif %}
                         </div>
                     </div>
                </div>

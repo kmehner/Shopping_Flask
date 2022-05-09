@@ -3,9 +3,10 @@ from datetime import datetime
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
+    name = db.Column(db.String(50), nullable=False)
     price = db.Column(db.String(10))
     description = db.Column(db.String(500))
+    unavailable = db.Column(db.Boolean, default = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
@@ -21,6 +22,10 @@ class Product(db.Model):
         for key, value in kwargs.items():
             if key in {'name', 'price', 'description'}:
                 setattr(self, key, value)
+        db.session.commit()
+
+    def remove(self):
+        self.unavailable = True
         db.session.commit()
  
     def delete(self):

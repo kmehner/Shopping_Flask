@@ -8,7 +8,7 @@ from app import db
 @cart.route('/')
 def index():
     title = 'Home'
-    products = Product.query.all()
+    products = Product.query.filter(Product.unavailable == False).all()
     return render_template('index.html', title=title, products=products)
 
 # Creating the product routes (eventually set to admin function)
@@ -26,8 +26,8 @@ def create_product():
         description = form.description.data
         try:
             new_product = Product(name=name, price=price, description=description, user_id=current_user.id)
-        except:
-            flash("This product already exists! Please try again with another Product Name", 'danger')
+        except: # EVENTUALLY add modal for the except (removed unique constraint since product items are now hidden)
+            flash("This product already exists or was recently deleted! Please try again with another Product Name", 'danger')
             return redirect(url_for('cart.create_product'))
         else:
             flash(f"{new_product.name} has been created", 'secondary')
@@ -62,11 +62,21 @@ def search_products():
 
 # Cart routes 
 
-# @cart.route('/select-products')
-# def select_products():
-#     title = 'Cart Products'
-#     products = Cart.query.all()
-#     return render_template('select_products.html', title=title, products=products)
+# Eventually add edit route
+
+@cart.route('/my-products')
+def my_products():
+    title = 'My Products'
+    products = Product.query.filter(Product.user_id == current_user.id, Product.unavailable == False).all()
+    return render_template('my_products.html', title=title, products=products)
+
+@cart.route('/remove-product/<product_id>')
+def hide_product(product_id):
+    product_to_hide = Product.query.get_or_404(product_id)
+    product_to_hide.remove()
+    flash(f"{product_to_hide.name} has successfully been removed","success")
+    return redirect(url_for('cart.my_products'))
+
 
 # update the quantity eventually sick 
 @cart.route('/add-to-cart/<product_id>')
@@ -112,7 +122,6 @@ def my_cart_products():
     products = cart
     user_cart = zip(products, cart)
 
-    # Apply filter - eventually add clear filter button and add count (else count +=1 and send it through)
     if form.validate_on_submit():
         term = form.search.data
         cart_search = Cart.query.filter(Cart.user_id == current_user.id).all()
