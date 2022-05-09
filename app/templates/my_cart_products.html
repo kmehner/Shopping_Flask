@@ -35,7 +35,7 @@
                                 <p class="card-text">&mdash; {{ p.price }}</p>
                                 <div class="mt-2">
                                     <a href="{{ url_for('cart.single_product', product_id=p.id) }}" class="btn btn-primary fas fa-info"></a>
-                                    <a href="{{ url_for('cart.remove_from_cart', cart_id=cart.id) }}" class="btn btn-danger fas fa-trash-alt"></a>
+                                    <a href="{{ url_for('cart.remove_from_cart', product_id=p.id) }}" class="btn btn-danger fas fa-trash-alt"></a>
                                 </div>
                             </div>
                         </div>

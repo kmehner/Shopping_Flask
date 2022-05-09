@@ -139,11 +139,11 @@ def my_cart_products():
     return render_template('my_cart_products.html', title=title, form=form, user_cart=user_cart, total=total, duplicate=duplicate)
 
 
-@cart.route("/remove-from-cart/<int:cart_id>")
+@cart.route("/remove-from-cart/<int:product_id>")
 @login_required
-def remove_from_cart(cart_id):
+def remove_from_cart(product_id):
     title = 'Remove product from cart'
-    cart = Cart.query.get_or_404(cart_id)
+    cart = Cart.query.filter(Cart.product_id == product_id, Cart.user_id == current_user.id).first()
     cart.delete()
     flash('Product has been removed from your cart!', 'success')
     return redirect(url_for('cart.my_cart_products'))
