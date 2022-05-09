@@ -15,14 +15,21 @@ def index():
 @cart.route('/create-product', methods=['GET', 'POST'])
 @login_required
 def create_product():
-    title = 'Add a Product'
+    title = 'Create a Product'
     form = ProductForm()
+    products = Product.query.all()
+
     if form.validate_on_submit():
         name = form.name.data
         price = form.price.data
         description = form.description.data
-        new_product = Product(name=name, price=price, description=description, user_id=current_user.id)
-        flash(f"{new_product.name} has been created", 'secondary')
+        try:
+            new_product = Product(name=name, price=price, description=description, user_id=current_user.id)
+        except:
+            flash("This product already exists! Please try again with another Product Name", 'danger')
+            return redirect(url_for('cart.create_product'))
+        else:
+            flash(f"{new_product.name} has been created", 'secondary')
 
         return redirect(url_for('cart.index'))
     return render_template('create_product.html', title=title, form=form)
@@ -38,13 +45,16 @@ def single_product(product_id):
 # Get all products that match search
 @cart.route('/search-products', methods=['GET', 'POST'])
 def search_products():
-    title = 'Search'
+    title = 'Search Products'
     form = SearchForm()
     products = []
+    message = ""
     if form.validate_on_submit():
         term = form.search.data
         products = Product.query.filter( ( Product.name.ilike(f'%{term}%')) | ( Product.price.ilike(f'%{term}%')) ).all()
-    return render_template('search_products.html', title=title, products=products, form=form)
+        if not products:
+            message = "There are no products that match your search"
+    return render_template('search_products.html', title=title, products=products, form=form, message=message)
 
 # insert my_products (edit, delete)
 
@@ -77,19 +87,34 @@ def add_to_cart(product_id):
         flash("Sorry, there was an error adding this item to your cart.", "danger")
         return redirect(url_for('cart.index'))
 
-@cart.route('/my-cart-products')
+@cart.route('/my-cart-products', methods=['GET', 'POST'])
 @login_required
 def my_cart_products():
     title = 'My Cart'
+    form = SearchForm()
+
     products = [Product.query.filter(Product.id == cart.product_id).all()[0] for cart in current_user.my_cart.all()]
     total = sum([float(product.price) for product in products])
-    if products:
-        cart = current_user.my_cart.all()
+    cart = current_user.my_cart.all()
+    user_cart = zip(products, cart)
+
+    # Apply filter - eventually add clear filter button and add count (else count +=1 and send it through)
+    if form.validate_on_submit():
+        term = form.search.data
+        cart = []
+        prevent_duplicate = []
+        products = [Product.query.filter( (Product.name.ilike(f'%{term}%')) | ( Product.price.ilike(f'%{term}%')) ).all()[0] for cart in current_user.my_cart.all()]
+        for p in products:
+            product = (Cart.query.filter(Cart.product_id == p.id, Cart.user_id == current_user.id).first())
+            if product not in prevent_duplicate:
+                cart.append(product)
+                prevent_duplicate.append(product)
         user_cart = zip(products, cart)
-        return render_template('my_cart_products.html', title=title, user_cart=user_cart, total=total)
-    else:
-        flash("Your cart appears to be empty", "danger")
-    return render_template('my_cart_products.html')
+        total = sum([float(product.price) for product in products])
+        return render_template('my_cart_products.html', title=title, products=products, total=total, form=form, user_cart=user_cart)
+
+
+    return render_template('my_cart_products.html', title=title, form=form, user_cart=user_cart, total=total)
 
 
 @cart.route("/remove-from-cart/<int:cart_id>")

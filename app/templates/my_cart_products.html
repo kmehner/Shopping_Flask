@@ -3,33 +3,48 @@
 
 {% block content %}
     <div class="row">
-        <h1>{{ title }}</h1>
-        {% if not user_cart %}
-            <p>Your cart seems to be empty, consider adding to it <a href="{{ url_for('cart.index') }}">here!</a></p>
-        {% else %}
+        <h1 class="text-center mt-3">{{ title }}</h1>
 
-            {% for p, cart in user_cart %}
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ p.name }}</h5>
-                        <p class="card-text">{{ p.price }}</p>
-                        <a href="{{ url_for('cart.remove_from_cart', cart_id=cart.id) }}" class="btn btn-danger" style="width: 50px;"><i class="fas fa-trash-alt"></i></a>
-                    </div>
-                </div>
+        <form action="" method="post">
+            {{ form.csrf_token }}
+            <div class="form-group mt-2 ms-auto me-auto mt-3 w-50">
         
+                {{ form.search(class='form-control', placeholder='Search Items Here') }}
+        
+                {{ form.submit(class='btn btn-primary w-100 mt-3')}}
+            </div>
+        </form>
+
+        {% if not user_cart %}
+            <p class="text-center">Your cart seems to be empty, consider adding to it <a href="{{ url_for('cart.index') }}" class="empty-cart">here!</a></p>
+        {% else %}
+            {% for p, cart in user_cart %}
+               <div class="container d-flex flex-column align-items-center justify-content-center">
+                    <div class="card w-50 mt-2">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ p.name }}</h5>
+                            <div class="d-flex justify-content-between">
+                                <p class="card-text">{{ p.price }}</p>
+                                <a href="{{ url_for('cart.remove_from_cart', cart_id=cart.id) }}" class="btn btn-danger fas fa-trash-alt mb-2"></a>
+                            </div>
+                        </div>
+                    </div>
+               </div>
             {% endfor %}
-        {% endif %}
+        
     </div>
 
     <!-- Checkout -->
     <div class="row">
-
-        <p>Total ${{ total }}</p>
-        <p>Payment</p>
-        <p>Shipping</p>
-
-        <a href="{{ url_for('cart.checkout') }}" class="btn btn-success">Checkout</a>
+        <hr class="mt-3">
+        <div class="container ms-auto me-auto w-50 d-flex flex-column">
+            <p class="text-center">Total ${{ total }}</p>
+            <p class="fas fa-cash-register"></p>
+            <p class="fas fa-shipping-fast"></p>
+            <a href="{{ url_for('cart.checkout') }}" class="btn btn-success">Checkout</a>
+        </div>
 
     </div>
+    {% endif %}
 
 {% endblock content %}

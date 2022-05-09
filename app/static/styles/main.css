@@ -1,0 +1,8 @@
+body {
+    font-family: 'Roboto Mono', monospace;
+}
+
+.empty-cart {
+    text-decoration: none;
+    color: darkslateblue;
+}

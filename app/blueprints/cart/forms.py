@@ -7,7 +7,7 @@ class ProductForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     price = StringField('Price', validators=[DataRequired()])
     description = StringField('Description', validators=[DataRequired()])
-    submit = SubmitField('Create Item')
+    submit = SubmitField('Create')
 
 
 class SearchForm(FlaskForm):
