@@ -2,25 +2,27 @@
 
 
 {% block content %}
-
-    {% if current_user.is_authenticated %}
-    <h1>Hello {{ current_user.username }}!</h1>
-    {% else %}
-    <h1>Hello please sign up to use our blog</h1>
-    {% endif %}
-
+    <div class="border border-dark mt-3">
+        {% if current_user.is_authenticated %}
+        <h1 class="mt-2 text-center"> Explore </h1>
+        {% else %}
+        <h1 class="mt-2 text-center">Hello! <br> Sign up or Log In</h1>
+        {% endif %}
+    </div>
     <div class="row">
 
         {% for p in products %}
-        <div class="col-12 col-md-6 col-lg-4">
+        <div class="col-12 col-md-6 col-lg-4 mt-3">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title text-center">{{ p.name }}</h5>
                     <div class="d-flex justify-content-center">
                         <cite>&mdash; {{ p.price }}</cite>
                     </div>
-                    <a href="{{ url_for('cart.add_to_cart', product_id=p.id) }}" class="btn btn-primary mt-2 mb-2 w-100">Add to Cart</a>
-                    <a href="{{ url_for('cart.single_product', product_id=p.id) }}" class="btn btn-primary mt-2 mb-2 w-100">More Info</a>
+                    <div class="d-flex justify-content-end mt-2">
+                        <a href="{{ url_for('cart.single_product', product_id=p.id) }}" class="btn btn-primary w-30 fas fa-info"></a>
+                        <a href="{{ url_for('cart.add_to_cart', product_id=p.id) }}" class="btn btn-dark w-30 ms-2 fa fa-cart-plus"></a>
+                    </div>
                 </div>
             </div>
         </div>
