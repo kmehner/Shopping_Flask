@@ -5,7 +5,7 @@
 
 <form action="" method="post">
     {{ form.csrf_token }}
-    <div class="form-group mt-2 ms-auto me-auto mt-3 w-50">
+    <div class="form-group mt-2 ms-auto me-auto mt-3 w-100 text-center">
         <h1>{{ title }}</h1>
 
         {{ form.search(class='form-control', placeholder='Search Items Here') }}
@@ -18,7 +18,7 @@
     {% if products %}
         {% for p in products %}
         <div class="col mt-3">
-            <div class="card mt-2 ms-auto me-auto w-50">
+            <div class="card mt-2 ms-auto me-auto w-100 h-100">
                 <div class="card-body">
                     <h5 class="card-title text-center">{{ p.name }}</h5>
                     <div class="d-flex justify-content-center">
