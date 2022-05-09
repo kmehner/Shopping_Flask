@@ -3,6 +3,7 @@ from flask import redirect, render_template, url_for, flash
 from flask_login import login_required, current_user
 from .forms import ProductForm, SearchForm
 from .models import Product, Cart
+from app import db
 
 @cart.route('/')
 def index():
@@ -93,28 +94,49 @@ def my_cart_products():
     title = 'My Cart'
     form = SearchForm()
 
+
     products = [Product.query.filter(Product.id == cart.product_id).all()[0] for cart in current_user.my_cart.all()]
     total = sum([float(product.price) for product in products])
-    cart = current_user.my_cart.all()
+
+    duplicate = {}
+    cart = []
+
+    for p in products:
+        if p.id not in duplicate.keys():
+            duplicate[p.id] = 1
+            cart.append(p)
+        else:
+            print("else")
+            duplicate[p.id] += 1
+
+    products = cart
     user_cart = zip(products, cart)
 
     # Apply filter - eventually add clear filter button and add count (else count +=1 and send it through)
     if form.validate_on_submit():
         term = form.search.data
+        cart_search = Cart.query.filter(Cart.user_id == current_user.id).all()
         cart = []
-        prevent_duplicate = []
-        products = [Product.query.filter( (Product.name.ilike(f'%{term}%')) | ( Product.price.ilike(f'%{term}%')) ).all()[0] for cart in current_user.my_cart.all()]
+
+        duplicate = {}
+
+        products = db.session.query(Product).join(Cart).filter(Product.id == Cart.product_id).filter(Product.name.ilike(f'%{term}%')).filter(Cart.user_id == current_user.id).all()
+
         for p in products:
-            product = (Cart.query.filter(Cart.product_id == p.id, Cart.user_id == current_user.id).first())
-            if product not in prevent_duplicate:
-                cart.append(product)
-                prevent_duplicate.append(product)
+            if p.id not in duplicate.keys():
+                cart.append(p)
+                count = 0
+                for item in cart_search:
+                    if item.product_id == p.id:
+                        count += 1
+                duplicate[p.id] = count
+
         user_cart = zip(products, cart)
         total = sum([float(product.price) for product in products])
-        return render_template('my_cart_products.html', title=title, products=products, total=total, form=form, user_cart=user_cart)
+        return render_template('my_cart_products.html', title=title, products=products, total=total, form=form, user_cart=user_cart, duplicate = duplicate)
 
 
-    return render_template('my_cart_products.html', title=title, form=form, user_cart=user_cart, total=total)
+    return render_template('my_cart_products.html', title=title, form=form, user_cart=user_cart, total=total, duplicate=duplicate)
 
 
 @cart.route("/remove-from-cart/<int:cart_id>")

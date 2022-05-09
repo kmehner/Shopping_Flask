@@ -10,8 +10,11 @@
             <div class="form-group mt-2 ms-auto me-auto mt-3 w-50">
         
                 {{ form.search(class='form-control', placeholder='Search Items Here') }}
-        
-                {{ form.submit(class='btn btn-primary w-100 mt-3')}}
+                <div class="d-flex justify-content-between mt-3">
+                    {{ form.submit(class='btn btn-primary w-100 me-2')}}
+                    <a href="{{ url_for('cart.my_cart_products') }}" class="btn btn-danger w-100" >Reset</a>
+                </div>
+
             </div>
         </form>
 
@@ -20,12 +23,20 @@
         {% else %}
             {% for p, cart in user_cart %}
                <div class="container d-flex flex-column align-items-center justify-content-center">
-                    <div class="card w-50 mt-2">
+                    <div class="card w-50 mt-3">
                         <div class="card-body">
                             <h5 class="card-title">{{ p.name }}</h5>
+                            {% for key, value in duplicate.items() %}
+                                    {% if key == p.id %}
+                                        <p>Quantity: {{ value }}</p>
+                                    {% endif %}
+                                {% endfor %}
                             <div class="d-flex justify-content-between">
-                                <p class="card-text">{{ p.price }}</p>
-                                <a href="{{ url_for('cart.remove_from_cart', cart_id=cart.id) }}" class="btn btn-danger fas fa-trash-alt mb-2"></a>
+                                <p class="card-text">&mdash; {{ p.price }}</p>
+                                <div class="mt-2">
+                                    <a href="{{ url_for('cart.single_product', product_id=p.id) }}" class="btn btn-primary fas fa-info"></a>
+                                    <a href="{{ url_for('cart.remove_from_cart', cart_id=cart.id) }}" class="btn btn-danger fas fa-trash-alt"></a>
+                                </div>
                             </div>
                         </div>
                     </div>
